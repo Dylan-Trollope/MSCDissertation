@@ -1,7 +1,7 @@
 # My custom stuff
 
-RLTut/
-!RLTut/main.py
+RLTut/*
+!main.py
 
 
 
