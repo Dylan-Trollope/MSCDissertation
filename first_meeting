@@ -1,0 +1,23 @@
+EARLY DELIVERABLES:
+
+	- Is MNIST allowed for early deliverables? Extended to audio_mnist
+	- Can the PoC program be relatively shallow compared to final deliverable?
+	- Experiments:
+		# training epochs
+		# ADAM vs RMSProp
+		# learning rates
+		# loss functions (dependent on problem to solve)
+		# batch_size
+		# Regularisation
+		
+	- Is Jupyter Notebook a reasonable platform to deliver code? 
+
+	- GTZAN audio dataset - 10 genres, 100 observations in each (total 1000)
+
+	- Access to CIM GPUs
+
+	- Deep Belief Network vs CNN vs Transfer Learning methods
+
+	
+
+
