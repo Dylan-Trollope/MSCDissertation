@@ -1,3 +1,21 @@
+IDEA 1: Deep Reinforcement Learning (Deep Q Networks)
+EARLY DELIVERABLES:
+
+	- Using OpenAI Gym, implement reinforcement agent using Q-Learning (PoC for gym)
+	- Using OpenAI Gym, implement reinforcement agent using DQN on the same environment as above
+		# Experiment here with parameters
+	 		~ Optimiser
+			~ Batch size
+			...
+	- Extend with Double Deep Q network
+	- Extend with Duelling Deep Q network
+
+	- Access to CIM GPUs
+
+	- Jupyter Notebook or not
+
+
+IDEA 2: Music Genre Classification
 EARLY DELIVERABLES:
 
 	- Is MNIST allowed for early deliverables? Extended to audio_mnist
