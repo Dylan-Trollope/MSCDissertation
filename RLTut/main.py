@@ -21,7 +21,7 @@ def main():
     epsilon = 1
     decay_rate = 0.005
 
-    num_episodes = 10000
+    num_episodes = 1500
     max_steps = 200 # per episode
 
     for episode in range(num_episodes):
@@ -29,13 +29,15 @@ def main():
         print(state)
         done = False
 
+    
+
         for s in range(max_steps):
             if random.uniform(0,1) < epsilon:
                 action = action_space.sample()
-                print(action)
+                print(action, end=", ")
             else:
                 action = np.argmax(qtable[state, :])
-                print(action)
+                print(action, end=", ")
 
             new_state, reward, done, info = env.step(action)
             qtable[state, action] = qtable[state, action] + learning_rate * (reward + discount_rate * np.max(qtable[new_state,:]) - qtable[state, action])
@@ -63,7 +65,7 @@ def main():
         new_state, reward, done, info = env.step(action)
         rewards += reward
         env.render()
-        time.sleep(0.01)
+        time.sleep(0.1)
         print("Score: {}".format(rewards))
         state = new_state
 
@@ -74,12 +76,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
-
-
-
-
-    
-

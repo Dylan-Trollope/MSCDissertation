@@ -1,0 +1,29 @@
+"A Comparison of Deep Q Networks"
+
+Taxi
+Mountain Car
+Pong
+
+-I've read Rainbow
+
+
+Fumbling around in terms of which direction to take the project
+
+- Compare different Q nets to each other and vanilla Q learning
+
+- Noisy DQN
+- Double DQN
+- Vanilla DQN 
+
+start with existing implementation
+
+Can I get to state X and reset to X? 
+	- histogram of returns from that state?
+	- exploration from state X? 
+
+Policy gradient 
+
+
+Backgammon  RL 
+Knightcap
+

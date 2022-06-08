@@ -9,6 +9,7 @@ EARLY DELIVERABLES:
 			...
 	- Extend with Double Deep Q network
 	- Extend with Duelling Deep Q network
+	- Extend with Prioritised Experience Replay
 
 	- Access to CIM GPUs
 
