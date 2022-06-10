@@ -85,9 +85,10 @@ def QLearning(env, learning, discount, epsilon, min_eps, episodes):
         if (i+1) % 100 == 0:    
             print('Episode {} Average Reward: {}'.format(i+1, ave_reward))
             
-    env.close()
     
     return ave_reward_list
+
+env.close()
 
 # Run Q-learning algorithm
 rewards = QLearning(env, 0.2, 0.9, 0.8, 0, 5000)
