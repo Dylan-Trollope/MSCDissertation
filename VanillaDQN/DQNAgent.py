@@ -5,6 +5,10 @@ import torch
 import torch.nn as nn
 import torch.autograd as autograd
 
+from DQN import DQN, ConvolutionalDQN
+
+
+
 class DQNAgent:
 
     def __init__(self, env, learning_rate=3e-4 , gamma=0.99 , buffer_size=10000, use_conv=True):
