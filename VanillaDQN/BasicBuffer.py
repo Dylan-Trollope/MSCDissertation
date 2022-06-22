@@ -14,7 +14,7 @@ class BasicBuffer:
 		self.buffer.append(experience)
 
 
-	def sample(self, bath_size):
+	def sample(self, batch_size):
 		state_batch = []
 		action_batch = []
 		reward_batch = []
@@ -23,15 +23,15 @@ class BasicBuffer:
 
 		batch = random.sample(self.buffer, batch_size)
 
-        for experience in batch:
-            state, action, reward, next_state, done = experience
-            state_batch.append(state)
-            action_batch.append(action)
-            reward_batch.append(reward)
-            next_state_batch.append(next_state)
-            done_batch.append(done)
+		for experience in batch:
+			state, action, reward, next_state, done = experience
+			state_batch.append(state)
+			action_batch.append(action)
+			reward_batch.append(reward)
+			next_state_batch.append(next_state)
+			done_batch.append(done)
 
-        return (state_batch, action_batch, reward_batch, next_state_batch, done_batch)
+		return (state_batch, action_batch, reward_batch, next_state_batch, done_batch)
 
 
 	def sample_sequence(self, batch_size):
@@ -41,21 +41,22 @@ class BasicBuffer:
 		next_state_batch = []
 		done_batch = []
 
-        max_start = len(self.buffer) - batch_size
-        start = np.random.randint(0, max_start)
+		max_start = len(self.buffer) - batch_size
+		start = np.random.randint(0, max_start)
 
-        for sample in range(start, start + batch_size):
-            state, action, reward, next_state, done = self.buffer[sample]
-            state_batch.append(state)
-            action_batch.append(action)
-            reward_batch.append(reward)
-            next_state_batch.append(next_state)
-            done_batch.append(done)
+		for sample in range(start, start + batch_size):
+			state, action, reward, next_state, done = self.buffer[start]
+			state, action, reward, next_state, done = experience
+			state_batch.append(state)
+			action_batch.append(action)
+			reward_batch.append(reward)
+			next_state_batch.append(next_state)
+			done_batch.append(done)
 
-        return (state_batch, action_batch, reward_batch, next_state_batch, done_batch)
+		return (state_batch, action_batch, reward_batch, next_state_batch, done_batch)
 
 	
-    def __len__(self):
+	def __len__(self):
 		return len(self.buffer)
 
 
