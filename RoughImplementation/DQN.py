@@ -61,7 +61,6 @@ class ConvolutionalDQN(nn.Module):
 		
 
 	def feature_dims(self):
-		return self.conv(autograd.Variable(torch.zeros(1, self.in_dims))).view(1, -1).size(0)
-		
+		return self.conv(autograd.Variable(torch.zeros(1, *self.in_dims))).view(1, -1).size(1)		
 
 

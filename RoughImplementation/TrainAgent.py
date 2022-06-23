@@ -19,6 +19,7 @@ def mini_batch_train(env, agent, max_episodes, max_steps, batch_size):
 			if len(agent.replay_buffer) > batch_size:
 				agent.update(batch_size)
 
+			# this block needs to be separated to handle both cases 	
 			if done or step == max_steps-1:
 				episode_rewards.append(episode_reward)
 				print("Episode", episode, "has reward", episode_reward)
@@ -29,11 +30,11 @@ def mini_batch_train(env, agent, max_episodes, max_steps, batch_size):
 	return episode_rewards
 	
 
-env_id = "CartPole-v0"
+env_id = "CartPole-v1"
 MAX_EPISODES = 100
 MAX_STEPS = 500
 BATCH_SIZE = 32 
 
 env = gym.make(env_id)
-agent = DQNAgent(env, use_conv=False)
+agent = DQNAgent(env, use_conv=True)
 episode_rewards = mini_batch_train(env, agent, MAX_EPISODES, MAX_STEPS, BATCH_SIZE)

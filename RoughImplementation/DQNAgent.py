@@ -24,7 +24,7 @@ class DQNAgent:
 			self.device = "cpu"
 
 		if use_conv:
-			self.model = ConvolutionalDQN(env.observation_space.shape[0], env.action_space.n).to(self.device)
+			self.model = ConvolutionalDQN(env.observation_space.shape, env.action_space.n).to(self.device)
 		else:
 			self.model = DQN(env.observation_space.shape, env.action_space.n).to(self.device)
 
