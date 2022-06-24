@@ -1,10 +1,11 @@
-from DQN import DQN, ER_DQN
 import gym 
 import numpy as np 
 import time
 import torch
 
 import matplotlib.pyplot as plt
+
+from Architectures import DQN, ER_DQN
 from Visualisation import render_plot
 
 
@@ -24,13 +25,14 @@ def ER_DQL(env, model, episodes, gamma, epsilon, decay, replay_size):
 
 		while not done:
 			q_values = model.predict(state)
+
 			if np.random.random() < epsilon:
 				action = env.action_space.sample()
 			else:
 				action = torch.argmax(q_values).item()
 
 			next_state, reward, done, _ = env.step(action)
-			env.render()
+			#env.render()
 			total += reward
 			memory.append((state, action, next_state, reward, done))
 			q_values = model.predict(state).tolist()
@@ -71,7 +73,7 @@ def memless_DQL(env, model, episodes, gamma, epsilon, decay):
 				action = torch.argmax(q_values).item()
 
 			next_state, reward, done, _ = env.step(action)
-			#env.render()
+			env.render()
 			total += reward
 
 			if done:
@@ -90,24 +92,26 @@ def memless_DQL(env, model, episodes, gamma, epsilon, decay):
 		print("Episode number:", episode_num, "Reward:", total)
 
 	return final_reward
-			
+
+
 ENV = gym.make("CartPole-v1")
 obs_dim = ENV.observation_space.shape[0] # extract from tuple
 action_dim = ENV.action_space.n 
 
-EPISODES = 250
+EPISODES = 200
 
 GAMMA = 0.9
-EPSILON = 0.3
+EPSILON = 0.2
 DECAY = 0.99
+MEMORY_SIZE = 10
 
 DQN = DQN(obs_dim, action_dim)
 x = range(EPISODES)
-y = memless_DQL(ENV, DQN, EPISODES, GAMMA, EPSILON, DECAY)
+#y = memless_DQL(ENV, DQN, EPISODES, GAMMA, EPSILON, DECAY)
 
 DQN_Replay = ER_DQN(obs_dim, action_dim)
-#y = ER_DQL(ENV, DQN_Replay, EPISODES, GAMMA, EPSILON, DECAY, 20)
+y = ER_DQL(ENV, DQN_Replay, EPISODES, GAMMA, EPSILON, DECAY, MEMORY_SIZE)
 
 
 
-render_plot(x, y, "CartPole performance using Deep Q Learning", "Number of Episodes", "Reward", True)
+render_plot(x, y, "CartPole performance using Deep Q Learning", True)
