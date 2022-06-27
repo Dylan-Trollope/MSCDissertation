@@ -1,3 +1,4 @@
+from tkinter import W
 import numpy as np 
 import torch 
 import torch.nn as nn
@@ -6,19 +7,21 @@ from torch.autograd import Variable
 import torchvision.transforms as T
 import random
 import time 
+import copy
 
 
 class DQN():
 
-	def __init__(self, state_dim, action_dim, lr=0.001):
+	def __init__(self, state_dim, action_dim, lr):
 		self.loss = nn.MSELoss()
 
+		SIZE = 64
 		self.nn = nn.Sequential(
-				torch.nn.Linear(state_dim, 128),
-				nn.LeakyReLU(),
-				nn.Linear(128, 256),
-				nn.LeakyReLU(),
-				nn.Linear(256, action_dim)
+				torch.nn.Linear(state_dim, SIZE),
+				nn.ReLU(),
+				nn.Linear(SIZE, SIZE*2),
+				nn.ReLU(),
+				nn.Linear(SIZE*2, action_dim)
 		)
 
 		self.optimiser = torch.optim.Adam(self.nn.parameters(), lr)
@@ -41,30 +44,72 @@ class DQN():
 class ER_DQN(DQN):
 
 	def replay(self, memory, size, gamma):
+		if len(memory) >= size:
+			states = []
+			targets = []
 
-		if len(memory)>=size:
 			batch = random.sample(memory, size)
-			batch_t = list(map(list, zip(*batch))) #Transpose batch list
-			states = batch_t[0]
-			actions = batch_t[1]
-			next_states = batch_t[2]
-			rewards = batch_t[3]
-			is_dones = batch_t[4]
 
-			states = torch.Tensor(states)
-			actions_tensor = torch.Tensor(actions).int()
-			next_states = torch.Tensor(next_states)
-			rewards = torch.Tensor(rewards)
-			is_dones_tensor = torch.Tensor(is_dones)
+			for experience in batch:
+				state, action, next_state, reward, done = experience
+				states.append(state)
+				q_vals = self.predict(state).tolist()
+				if done:
+					q_vals[action] = reward
+				else: 
+					q_vals_next = self.predict(next_state)
+					q_vals[action] = reward + gamma * torch.max(q_vals_next).item()
+				targets.append(q_vals)
+			self.update(states, targets)
 
-			is_dones_indices = torch.where(is_dones_tensor==True)[0]
 
-			all_q_values = self.nn(states) # predicted q_values of all states
-			all_q_values_next = self.nn(next_states)
-			
-			all_q_values[range(len(all_q_values)),actions]=rewards+gamma*torch.max(all_q_values_next, axis=1).values
-			all_q_values[is_dones_indices, actions_tensor[is_dones].tolist()]=rewards[is_dones_indices.tolist()]
-			self.update(states, all_q_values)
+class Double_DQN(DQN):
+	
+	def __init__(self, action_dim, state_dim, lr):
+		super.__init__(self, action_dim, state_dim, lr)
+		self.target = copy.deepcopy(self.model)
+
+
+	def target_predict(self, s):
+		with torch.no_grad:
+			return self.target(torch.Tensor(s))
+
+
+	def target_update(self):
+		self.target.load_state_dict(self.model.state.dict())
+
+
+	def replay(self, memory, size, gamma):
+		if len(memory) > size:
+			states = []
+			targets = [] 
+
+			batch = random.sample(memory, size)
+
+			for experience in batch:
+				state, action, next_state, reward, done = experience
+				states.append(state)
+
+				q_vals = self.predict(state).tolist()
+				if done:
+					q_vals[action] = reward
+				else: 
+					q_vals_next = self.target_predict(next_state)
+					q_vals[action] = reward + gamma * torch.max(q_vals_next).item()
+				targets.append(q_vals)
+			self.update(states, targets)
+
+
+
+
+
+
+
+
+		
+
+
+
 
 
 
