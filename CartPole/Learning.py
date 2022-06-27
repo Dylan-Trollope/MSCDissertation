@@ -21,6 +21,7 @@ def ER_DQL(env, model, episodes, gamma, epsilon, decay, replay_size):
 		total = 0
 
 		while not done:
+			# should this be converted to a list? 
 			q_values = model.predict(state)
 
 			if np.random.random() < epsilon:
@@ -32,6 +33,7 @@ def ER_DQL(env, model, episodes, gamma, epsilon, decay, replay_size):
 			#env.render()
 			total += reward
 			memory.append((state, action, next_state, reward, done))
+			# if 25 is a list, this doesnt need to be computed again
 			q_values = model.predict(state).tolist()
 
 			t_0 = time.time()
@@ -91,5 +93,43 @@ def memless_DQL(env, model, episodes, gamma, epsilon, decay):
 	return final_reward
 
 
-def double_DQL(env, model, episodes, gamma, epsilon, decay):
+def double_DQL(env, model, episodes, gamma, epsilon, decay, replay_size, update_freq):
 	final_reward = []
+	memory = []
+
+	epsisode_num = 0
+
+	for episode in range(episodes):
+		episode_num += 1
+		if episode % update_freq == 0:
+			model.target_update()
+
+		state = env.reset()
+		done = False
+		total = 0
+
+		while not done:
+			q_values = model.predict(state).tolist()
+			if np.random.random() < epsilon:
+				action = env.action_space.sample()
+			else:
+				action = torch.argmax(q_values).item()
+
+			next_state, reward, done, _ = env.step(action)
+			total += reward
+			memory.append((state, action, next_state, reward, done))
+			model.replay(memory, replay_size, gamma)
+
+			state = next_state
+
+		epsilon = max(epsilon * decay, 0.01)
+		final_reward.append(total)
+		print("Episode number:", episode_num, "Reward:", total)
+	
+	return final_reward
+
+
+
+
+
+				
