@@ -1,12 +1,8 @@
-from tkinter import W
-import numpy as np 
 import torch 
 import torch.nn as nn
 
 from torch.autograd import Variable
-import torchvision.transforms as T
 import random
-import time 
 import copy
 
 
@@ -15,13 +11,15 @@ class DQN():
 	def __init__(self, state_dim, action_dim, lr):
 		self.loss = nn.MSELoss()
 
-		SIZE = 64
+		SIZE = 60
+
+		
 		self.nn = nn.Sequential(
 				torch.nn.Linear(state_dim, SIZE),
-				nn.ReLU(),
-				nn.Linear(SIZE, SIZE*2),
-				nn.ReLU(),
-				nn.Linear(SIZE*2, action_dim)
+				nn.LeakyReLU(),
+				nn.Linear(SIZE, SIZE * 2),
+				nn.LeakyReLU(),
+				nn.Linear(SIZE * 2, action_dim)
 		)
 
 		self.optimiser = torch.optim.Adam(self.nn.parameters(), lr)
@@ -65,18 +63,18 @@ class ER_DQN(DQN):
 
 class Double_DQN(DQN):
 	
-	def __init__(self, action_dim, state_dim, lr):
-		super.__init__(self, action_dim, state_dim, lr)
-		self.target = copy.deepcopy(self.model)
+	def __init__(self, state_dim, action_dim, lr):
+		super().__init__(state_dim, action_dim, lr)
+		self.target = copy.deepcopy(self.nn)
 
 
 	def target_predict(self, s):
-		with torch.no_grad:
+		with torch.no_grad():
 			return self.target(torch.Tensor(s))
 
 
 	def target_update(self):
-		self.target.load_state_dict(self.model.state.dict())
+		self.target.load_state_dict(self.nn.state_dict())
 
 
 	def replay(self, memory, size, gamma):
@@ -98,19 +96,4 @@ class Double_DQN(DQN):
 					q_vals[action] = reward + gamma * torch.max(q_vals_next).item()
 				targets.append(q_vals)
 			self.update(states, targets)
-
-
-
-
-
-
-
-
-		
-
-
-
-
-
-
 

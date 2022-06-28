@@ -1,4 +1,3 @@
-import gym 
 import numpy as np 
 import time
 import torch
@@ -97,7 +96,7 @@ def double_DQL(env, model, episodes, gamma, epsilon, decay, replay_size, update_
 	final_reward = []
 	memory = []
 
-	epsisode_num = 0
+	episode_num = 0
 
 	for episode in range(episodes):
 		episode_num += 1
@@ -109,15 +108,16 @@ def double_DQL(env, model, episodes, gamma, epsilon, decay, replay_size, update_
 		total = 0
 
 		while not done:
-			q_values = model.predict(state).tolist()
 			if np.random.random() < epsilon:
 				action = env.action_space.sample()
 			else:
+				q_values = model.predict(state)
 				action = torch.argmax(q_values).item()
 
 			next_state, reward, done, _ = env.step(action)
 			total += reward
 			memory.append((state, action, next_state, reward, done))
+			q_values = model.predict(state)
 			model.replay(memory, replay_size, gamma)
 
 			state = next_state
@@ -129,7 +129,3 @@ def double_DQL(env, model, episodes, gamma, epsilon, decay, replay_size, update_
 	return final_reward
 
 
-
-
-
-				
