@@ -27,7 +27,3 @@ def random_search(env, episodes):
 		reward_list.append(total)
 	return reward_list
 
-x = range(EPISODES)
-y = random_search(ENV, EPISODES)
-
-render_plot(x,y, "Performance of CartPole using random strategy", "Number of Episodes", "Reward", True)
