@@ -29,7 +29,7 @@ def ER_DQL(env, model, episodes, gamma, epsilon, decay, replay_size):
 				action = torch.argmax(q_values).item()
 
 			next_state, reward, done, _ = env.step(action)
-			#env.render()
+			env.render()
 			total += reward
 			memory.append((state, action, next_state, reward, done))
 			# if 25 is a list, this doesnt need to be computed again
@@ -65,7 +65,7 @@ def memless_DQL(env, model, episodes, gamma, epsilon, decay):
 
 		while not done:
 			q_values = model.predict(state)
-			if np.random.random() < epsilon:
+			if np.random.random() > epsilon:
 				action = env.action_space.sample()
 			else:
 				action = torch.argmax(q_values).item()

@@ -9,7 +9,7 @@ import sys
 
 # PARAMETERS FOR MODEL 
 
-ENV = gym.make("CartPole-v1")
+ENV = gym.make("LunarLander-v2")
 
 EPISODES = 200
 LEARNING_RATE = 0.001
