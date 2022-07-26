@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def render_plot(x, y, title, trend):
+def render_plot(x, y, count, title, trend):
 
 	f, ax = plt.subplots(nrows=1, ncols=2)
 	f.suptitle(title)
@@ -13,6 +13,7 @@ def render_plot(x, y, title, trend):
 	ax[0].axhline(200, label="goal", ls="--", c='red')
 	ax[0].set_xlabel("Episode Number")
 	ax[0].set_ylabel("Reward")
+	ax[0].text(20, 0, "Achieved Goal: " + str(count))
 	ax[0].legend()
 
 	if trend: 

@@ -8,7 +8,7 @@ import torch
 def ER_DQL(env, model, episodes, gamma, epsilon, decay, replay_size):
 	final_reward = []
 	memory = []
-
+	goal_achieved = 0
 	episode_num = 0
 	total_replay_time = 0
 
@@ -29,7 +29,7 @@ def ER_DQL(env, model, episodes, gamma, epsilon, decay, replay_size):
 				action = torch.argmax(q_values).item()
 
 			next_state, reward, done, _ = env.step(action)
-			env.render()
+			#env.render()
 			total += reward
 			memory.append((state, action, next_state, reward, done))
 			# if 25 is a list, this doesnt need to be computed again
@@ -44,9 +44,11 @@ def ER_DQL(env, model, episodes, gamma, epsilon, decay, replay_size):
 
 		epsilon = max(epsilon * decay, 0.01)
 		final_reward.append(total)
+		if total >= 200:
+			goal_achieved += 1
 		print("Episode number:", episode_num, "Reward:", total)
-
-	return final_reward
+	print(goal_achieved)
+	return final_reward, goal_achieved
 
 
 

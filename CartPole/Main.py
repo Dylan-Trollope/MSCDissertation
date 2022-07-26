@@ -9,9 +9,9 @@ import sys
 
 # PARAMETERS FOR MODEL 
 
-ENV = gym.make("LunarLander-v2")
+ENV = gym.make("CartPole-v1")
 
-EPISODES = 200
+EPISODES = 50
 LEARNING_RATE = 0.001
 
 GAMMA = 0.9
@@ -40,7 +40,7 @@ x = range(EPISODES)
 
 
 if __name__ == "__main__":
-    EPISODES = 150
+    EPISODES = 50
     x = range(EPISODES)
     if sys.argv[1] == "Random":
         y = random_search(ENV, EPISODES)
@@ -53,8 +53,8 @@ if __name__ == "__main__":
 
     if sys.argv[1] == "ER":
         MODEL = ER_DQN(obs_dim, action_dim, LEARNING_RATE)
-        y = ER_DQL(ENV, MODEL, EPISODES, GAMMA, EPSILON, DECAY, MEMORY_SIZE)
-        render_plot(x, y, "CartPole Performance using DQN with Experience Replay", True)
+        y, count = ER_DQL(ENV, MODEL, EPISODES, GAMMA, EPSILON, DECAY, MEMORY_SIZE)
+        render_plot(x, y, count, "CartPole Performance using DQN with Experience Replay", True)
 
 
 
