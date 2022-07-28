@@ -39,7 +39,7 @@ class DQN():
 
 
 
-class ER_DQN(DQN):
+class ErDQN(DQN):
 
 	def replay(self, memory, size, gamma):
 		if len(memory) >= size:
@@ -61,7 +61,7 @@ class ER_DQN(DQN):
 			self.update(states, targets)
 
 
-class Double_DQN(DQN):
+class DoubleDQN(DQN):
 	
 	def __init__(self, state_dim, action_dim, lr):
 		super().__init__(state_dim, action_dim, lr)
