@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def render_plot_with_counts(x, y, count, title, trend):
+def render_plot_with_hist(x, y, count, title, trend):
 
 	f, ax = plt.subplots(nrows=1, ncols=2)
 	f.suptitle(title)

@@ -8,7 +8,7 @@ from Visualisation import render_plot
 ENV = gym.make("CartPole-v1")
 EPISODES = 200
 
-def random_search(env, episodes):
+def random_search(env, episodes, *args):
     reward_list = []
     goal_achieved = 0
     

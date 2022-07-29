@@ -5,30 +5,25 @@ from Architectures import *
 
 
 
-def mean_per_episode(model, alg, runs, episodes, env):
-    x = range(episodes)
-    episode_means = {}
-    ys = {}
-    counts = []
-    for i in range(runs):
-        
-        if model is not None:
-            y, count = alg(model)
-        else:
-            y, count = alg(env, episodes)
-        episode_means[i] = y
-        counts.append(count)
+def mean_per_episode(model, alg, episodes, runs):
+	x = range(episodes)
+	episode_means = {}
+	ys = {}
+	counts = []
+	for i in range(runs):
+		y, count = alg(model)
+		episode_means[i] = y
+		counts.append(count)
 
-    for i in range(episodes):
-        ys[i] = [vals[i] for vals in episode_means.values()]
+	for i in range(episodes):
+		ys[i] = [vals[i] for vals in episode_means.values()]
 
-    y = [np.mean(vals) for vals in ys.values()]
-    assert(len(x) == len(y))
+	y = [np.mean(vals) for vals in ys.values()]
+	assert(len(x) == len(y))
+	print(counts)
+	return x, y, counts
 
-    return x, y, counts
-
-    
-
+	
 
 
 

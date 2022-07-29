@@ -69,7 +69,7 @@ def memless_dql(env, model, episodes, gamma, epsilon, decay):
                 action = torch.argmax(q_values).item()
 
             next_state, reward, done, _ = env.step(action)
-            env.render()
+			#env.render()
             total += reward
 
             if done:

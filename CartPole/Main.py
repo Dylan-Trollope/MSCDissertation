@@ -1,7 +1,7 @@
 from Architectures import DQN, ErDQN, DoubleDQN
 from Learning import double_dql, memless_dql, er_dql
 from RandomStrategy import random_search
-from Visualisation import render_plot
+from Visualisation import render_plot, render_plot_with_hist
 from Experiments import mean_per_episode
 
 
@@ -14,7 +14,7 @@ import sys
 
 ENV = gym.make("CartPole-v1")
 
-EPISODES = 100
+EPISODES = 50
 LEARNING_RATE = 0.001
 
 GAMMA = 0.9
@@ -31,28 +31,46 @@ ACTION_DIM = ENV.action_space.n
 
 
 if __name__ == "__main__":
-    x = range(EPISODES)
-    if sys.argv[1] == "Random":
-        if sys.argv[2] == "1":
-            print("here")
-            x, y, count = mean_per_episode(None, random_search, 10, EPISODES, ENV)
-            render_plot(x, y, "CartPole using random search over 10 runs")
-        
-        #render_plot(x, y, count, "CartPole performance using random strategy", False)
+	x = range(EPISODES)
+	runs = 10
+	if sys.argv[1] == "Random":
+		if sys.argv[2] == "1":
+			alg = lambda _ : random_search(ENV, EPISODES)
+			x, y, count = mean_per_episode(None, alg, EPISODES, runs)
+			average_goal_achieved = sum(count) / runs
+			print(average_goal_achieved)
+			render_plot(x, y, "CartPole average using random search over 10 runs for " + str(EPISODES) + " episodes")
+		elif sys.argv[2] == '2':
+			y, count = random_search(ENV, EPISODES)
+			render_plot_with_hist(x, y, count, "CartPole with goal achieved counts", True)
 
-    if sys.argv[1] == "Memless":
-        model = DQN(OBS_DIM, ACTION_DIM, LEARNING_RATE)
-        y, count = memless_dql(ENV, model, EPISODES, GAMMA, EPSILON, DECAY)
-        render_plot(x, y, count, "CartPole Performance using DQN without memory", True)
 
-    if sys.argv[1] == "ER":
-        model = ErDQN(OBS_DIM, ACTION_DIM, LEARNING_RATE)
-        y, count = er_dql(ENV, model, EPISODES, GAMMA, EPSILON, DECAY, MEMORY_SIZE)
-        render_plot(x, y, count, "CartPole Performance using DQN with Experience Replay", True)
+	if sys.argv[1] == "Memless":
+		model = DQN(OBS_DIM, ACTION_DIM, LEARNING_RATE)
+		if sys.argv[2] == '1':
+			alg = lambda model: memless_dql(ENV, model, EPISODES, GAMMA, EPSILON, DECAY)
+			x, y, count = mean_per_episode(model, alg, EPISODES, runs)
+			average_goal_achieved = sum(count) / runs
+			print(average_goal_achieved)
+			render_plot(x, y, "CartPole Performance using DQN without memory")
+		elif sys.argv[2] == '2':
+			y, count = memless_dql(ENV, model, EPISODES, GAMMA, EPSILON, DECAY)
+			render_plot_with_hist(x, y, count, "CartPole without memory hist", True)
+			
 
-    if sys.argv[1] == "Double":
-        model = DoubleDQN(OBS_DIM, ACTION_DIM, LEARNING_RATE)
-        y, count = double_dql(ENV, model, EPISODES, GAMMA, EPSILON, DECAY, MEMORY_SIZE, 10)
-        
+
+	if sys.argv[1] == "ER":
+		model = ErDQN(OBS_DIM, ACTION_DIM, LEARNING_RATE)
+		if sys.argv[2] == '1':
+			alg = lambda model: er_dql(ENV, model, EPISODES, GAMMA, EPSILON, DECAY, MEMORY_SIZE)
+			x, y, count = mean_per_episode(model, alg, EPISODES, runs)
+			render_plot(x, y, "CartPole with Experience Replay")
+
+
+
+	if sys.argv[1] == "Double":
+		model = DoubleDQN(OBS_DIM, ACTION_DIM, LEARNING_RATE)
+		y, count = double_dql(ENV, model, EPISODES, GAMMA, EPSILON, DECAY, MEMORY_SIZE, 10)
+		
 
 
