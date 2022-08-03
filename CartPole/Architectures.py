@@ -11,7 +11,7 @@ class DQN(nn.Module):
 	def __init__(self, state_dim, action_dim, lr):
 		super(DQN, self).__init__()
 		self.loss = nn.MSELoss()
-		SIZE = 60
+		SIZE = 32
 		self.nn = nn.Sequential(
 				torch.nn.Linear(state_dim, SIZE),
 				nn.LeakyReLU(),
@@ -22,7 +22,7 @@ class DQN(nn.Module):
 
 		self.optimiser = torch.optim.Adam(self.nn.parameters(), lr)
 
-				
+
 	def update(self, state, y):
 		y_pred = self.nn(torch.Tensor(state))
 		loss = self.loss(y_pred, Variable(torch.Tensor(y)))
