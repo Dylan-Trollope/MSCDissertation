@@ -1,0 +1,40 @@
+taking average over 10 runs of every episode
+	-- smoother curve 
+	-- but we know that any e_t is dependent on every e before it 
+			-- stupid experiment? 
+
+4D space vs Q value - theres a value, for every action, so just take the highest? 
+
+
+Using convolutional net for CartPole is not very good, but still gives experiments and comparisons
+
+
+slices through the value function
+
+Fix one dimension and plot the 3D remaining 
+
+concentration of beahviour 
+
+
+number of epxriments
+
+robustness test for random states
+
+-- random starting states
+
+freeze the network and see how good the states are 
+
+compare the estimated value of the network vs actual q value 
+-- give more reward for pole in the middle 
+
+paragraph = idea (notes about what is in it)
+
+dont put vital points in middle of paragraph
+
+short statements about the idea -> logical ordering -> fluff into readable
+
+Bertrand Russel - autobiography
+
+write a story
+
+

@@ -27,6 +27,8 @@ UPDATE = 10
 OBS_DIM = ENV.observation_space.shape[0]
 ACTION_DIM = ENV.action_space.n
 
+
+
 # PARAMETERS FOR VISUALISATION
 
 
@@ -47,6 +49,7 @@ if __name__ == "__main__":
 
 	if sys.argv[1] == "Memless":
 		model = DQN(OBS_DIM, ACTION_DIM, LEARNING_RATE)
+		print(list(model.parameters()))
 		if sys.argv[2] == '1':
 			alg = lambda model: memless_dql(ENV, model, EPISODES, GAMMA, EPSILON, DECAY)
 			x, y, count = mean_per_episode(model, alg, EPISODES, runs)

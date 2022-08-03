@@ -6,14 +6,12 @@ import random
 import copy
 
 
-class DQN():
+class DQN(nn.Module):
 
 	def __init__(self, state_dim, action_dim, lr):
+		super(DQN, self).__init__()
 		self.loss = nn.MSELoss()
-
 		SIZE = 60
-
-		
 		self.nn = nn.Sequential(
 				torch.nn.Linear(state_dim, SIZE),
 				nn.LeakyReLU(),
@@ -36,6 +34,7 @@ class DQN():
 	def predict(self, state):
 		with torch.no_grad():
 			return self.nn(torch.Tensor(state))
+			
 
 
 
