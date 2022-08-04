@@ -22,7 +22,7 @@ def er_dql(env, model, episodes, gamma, epsilon, decay, replay_size):
         while not done:
             # should this be converted to a list? 
             q_values = model.predict(state)
-            print(q_values)
+            # print(q_values)
             
 
             if np.random.random() < epsilon:
@@ -65,7 +65,7 @@ def memless_dql(env, model, episodes, gamma, epsilon, decay):
 
         while not done:
             q_values = model.predict(state)
-            if np.random.random() > epsilon:
+            if np.random.random() < epsilon:
                 action = env.action_space.sample()
             else:
                 action = torch.argmax(q_values).item()
@@ -90,8 +90,8 @@ def memless_dql(env, model, episodes, gamma, epsilon, decay):
         if total >= 200:
             goal_achieved += 1
         print("Episode number:", episode_num, "Reward:", total)
-        print("Q values", q_values)
-        print("State", state)
+        # print("Q values", q_values)
+        # print("State", state)
         
 
     return final_reward, goal_achieved

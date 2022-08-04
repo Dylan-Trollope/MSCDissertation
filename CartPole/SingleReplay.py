@@ -2,6 +2,7 @@ import numpy as np
 import torch 
 import torch.nn as nn
 import gym 
+import matplotlib.pyplot as plt
 from torch.autograd import Variable
 
 
@@ -11,7 +12,7 @@ class DQN():
 
 	def __init__(self, state_dim, action_dim, lr):
 		super(DQN, self).__init__()
-		SIZE = 32
+		SIZE = 64
 
 		self.nn = nn.Sequential(
 				torch.nn.Linear(state_dim, SIZE),
@@ -22,7 +23,7 @@ class DQN():
 		)
 
 		self.loss = nn.MSELoss()
-		self.optimiser = torch.optim.RMSprop(self.nn.parameters(), lr)
+		self.optimiser = torch.optim.Adam(self.nn.parameters(), lr)
 
 
 	def update(self, state, y):
@@ -59,7 +60,7 @@ def train(env, model, episodes, gamma, epsilon, decay):
 
 		while not done:
 			q_values = model.predict(state)
-			if np.random.random() > epsilon:
+			if np.random.random() < epsilon:
 				action = env.action_space.sample()
 			else:
 				action = torch.argmax(q_values).item()
@@ -83,7 +84,7 @@ def train(env, model, episodes, gamma, epsilon, decay):
 		final_reward.append(total)
 		if total >= 200:
 			goal_achieved += 1
-		print("Episode number:", episode_num, "Reward:", total)
+		print("Episode number:", episode_num, "Reward:", total, "Epsilon:", epsilon)
 		# print("Q values", q_values)
 		# print("State", state)
 		
@@ -91,28 +92,50 @@ def train(env, model, episodes, gamma, epsilon, decay):
 	return final_reward, goal_achieved
 
 
-env = gym.make("CartPole-v1")
 
 # parameters
-episodes = 50
+episodes = 150
 lr = 0.001
 
 gamma = 0.9
 epsilon = 0.3
 decay = 0.99
-
-
 UPDATE = 10
 
-obs_dim = env.observation_space.shape[0]
-action_dim = env.action_space.n
+def average(runs, env, episodes):
+	all_rewards = []
+	successes = []
+
+	for _ in range(runs):
+		model = DQN(obs_dim, action_dim, lr)
+
+		rewards, goals = train(env, model, episodes, gamma, epsilon, decay)
+		all_rewards.append(rewards)
+		successes.append(goals)
+
+	
+	rewards_array = np.array([np.array(i) for i in all_rewards])
+	return successes, rewards_array
+
 
 if __name__ == "__main__":
 
+	env = gym.make("CartPole-v1")
+	obs_dim = env.observation_space.shape[0]
+	action_dim = env.action_space.n
 	model = DQN(obs_dim, action_dim, lr)
-	train(env, model, episodes, gamma, epsilon, decay)
+	rewards, goals = train(env, model, episodes, gamma, epsilon, decay)
 
-
+	goals, rewards = average(10, env, episodes)
+	
+	for i in range(len(rewards)):
+		plt.plot(range(episodes), rewards[i], label='_nolegend_')
+	plt.axhline(y=200, color='r', linestyle='--', label='goal')
+	plt.legend()
+	plt.title("CartPole rewards using random strategy over 10 runs")
+	plt.xlabel("Episodes")
+	plt.ylabel("Reward")
+	plt.show()
 
 
 

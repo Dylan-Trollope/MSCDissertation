@@ -47,7 +47,7 @@ def train(env, model, episodes, gamma, epsilon, decay, mem_size):
 		while not done:
 			# should this be converted to a list? 
 			q_values = model.predict(state)
-			print(q_values)
+			# print(q_values)
 			
 
 			if np.random.random() < epsilon:
@@ -80,15 +80,14 @@ lr = 0.001
 gamma = 0.9
 epsilon = 0.3
 decay = 0.99
-
-
 UPDATE = 10
 
 
+if __name__ == "__main__":
 
-env = gym.make("CartPole-v1")
-obs_dim = env.observation_space.shape[0]
-action_dim = env.action_space.n
+	env = gym.make("CartPole-v1")
+	obs_dim = env.observation_space.shape[0]
+	action_dim = env.action_space.n
 
-model = ER(obs_dim, action_dim, lr)
-train(env, model, episodes, gamma, epsilon, decay, 10)
+	model = ER(obs_dim, action_dim, lr)
+	train(env, model, episodes, gamma, epsilon, decay, 10)

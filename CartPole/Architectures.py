@@ -11,7 +11,7 @@ class DQN(nn.Module):
 	def __init__(self, state_dim, action_dim, lr):
 		super(DQN, self).__init__()
 		self.loss = nn.MSELoss()
-		SIZE = 32
+		SIZE = 64
 		self.nn = nn.Sequential(
 				torch.nn.Linear(state_dim, SIZE),
 				nn.LeakyReLU(),
