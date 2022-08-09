@@ -50,19 +50,7 @@ def averages(runs, env, episodes):
 
 
 if __name__ == "__main__":
-    env = gym.make("CartPole-v1")
-    episodes = 150
 
-    goals, rewards = averages(10, env, episodes)
-    
-    for i in range(len(rewards)):
-        plt.plot(range(episodes), rewards[i], label='_nolegend_')
-    plt.axhline(y=200, color='r', linestyle='--', label='goal')
-    plt.legend()
-    plt.title("CartPole rewards using random strategy over 10 runs")
-    plt.xlabel("Episodes")
-    plt.ylabel("Reward")
-    plt.show()
 
 
 
