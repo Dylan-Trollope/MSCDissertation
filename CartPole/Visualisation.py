@@ -27,7 +27,7 @@ def render_plot_with_hist(x, y, count, title, trend, filename):
     ax[1].axvline(200, label="goal", ls="--", c='red')
     ax[1].set_xlabel("Scores per last 50 episodes")
     ax[1].set_ylabel("Frequency")
-    ax[1].legend(
+    ax[1].legend()
     plt.savefig(fname=filename, dpi=100)
     f.tight_layout()
     plt.show()
@@ -36,7 +36,7 @@ def render_plot_with_hist(x, y, count, title, trend, filename):
 def render_averages_plot(x, ys, title, filename):
     plt.title(title)
     plt.axhline(y=200, color='r', linestyle='--', label='goal')
-    plt.title("CartPole rewards with no ER over 10 runs")
+    plt.title(title)
     plt.xlabel("Episodes")
     plt.ylabel("Reward")
     for i in range(len(ys)):
