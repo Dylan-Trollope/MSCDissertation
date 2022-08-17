@@ -2,6 +2,24 @@ Experiments that I've already done
 Have to do last few experiments
 Write conclusion and do professional issues
 
+three interesting points:
+- value of max qs
+- max value computed
+- follow action with maximal q and see return (optimal policy)
+
+- plot angle of pole vs where the doomed states might be 
+
+- 0 because it starts at training
+- peak 
+- plot the differences
+- why are the lines on top of each other
+- why are doomed not 0
+
+- avoiding areas of the state space
+- over the course of training, diff between predicted and actual get smaller?
+- what is return with no exploration
+
+
 
 
 
