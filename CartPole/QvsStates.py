@@ -165,7 +165,7 @@ action_dim = env.action_space.n
 model = DQN(obs_dim, action_dim, lr)
 
 
-q, pos, angle = train(env, model, 100, gamma, epsilon, decay)
+q, pos, angle = train(env, model, 500, gamma, epsilon, decay)
 
 
 #8.5
@@ -175,32 +175,40 @@ print(len(q_max[0]))
 print(q_max[0].shape)
 print(q_max[0].shape)
 
-numpy_q = q_max[0].numpy()
+numpy_q = q_max[0].T.numpy()
 print(numpy_q)
 
-from matplotlib import cm
+from matplotlib import cm, projections
 from scipy.interpolate import griddata
 
 
 fig = plt.figure(figsize=(12, 12))
-ax = fig.add_subplot(projection='3d')
+ax = fig.add_subplot(projection="3d")
+
+# SLICE = 4000
 
 
 
-x_min, x_max = env.observation_space.low[0], env.observation_space.high[0]
-y_min, y_max = env.observation_space.low[2], env.observation_space.high[2]
+# x_min, x_max = env.observation_space.low[0], env.observation_space.high[0]
+# y_min, y_max = env.observation_space.low[2], env.observation_space.high[2]
 
-x_space = np.linspace(x_min, x_max, len(pos))
-y_space = np.linspace(y_min, y_max, len(angle))
-X, Y = np.meshgrid(x_space, y_space)
+# x_space = np.linspace(x_min, x_max, len(pos[-SLICE:]))
+# y_space = np.linspace(y_min, y_max, len(angle[-SLICE:]))
+# X, Y = np.meshgrid(x_space, y_space)
 
-Z = griddata((pos, angle), , (X, Y), method='linear')
-ax.plot_surface(X, Y, Z)
+# Z = griddata((pos[-SLICE:], angle[-SLICE:]), q_max[0].T[-SLICE:] , (X[-SLICE:], Y[-SLICE:]), method='linear')
+# # plt.pcolormesh(X, Y, Z)
 
 
+# surf = ax.plot_surface(X, Y, Z, cmap=cm.coolwarm)
+# fig.colorbar(surf, shrink=0.5)
+
+plot = ax.scatter3D(pos[:500], angle[:500], q.T[1][:500], c=numpy_q[:500], cmap=cm.coolwarm)
+ax.view_init(20, -120)
+fig.colorbar(plot)
 plt.show()
 
 
-
+# plot the scatter of Q vs (pos, angle) for the first and last 500 steps of the training process
 
 
