@@ -4,6 +4,7 @@ import torch.nn as nn
 import gym 
 import matplotlib.pyplot as plt
 from torch.autograd import Variable
+import pandas as pd
 
 from Visualisation import render_averages_plot, render_plot_with_hist
 
@@ -11,140 +12,94 @@ from Visualisation import render_averages_plot, render_plot_with_hist
 
 class DQN():
 
-    def __init__(self, state_dim, action_dim, lr):
-        super(DQN, self).__init__()
-        SIZE = 64
+	def __init__(self, state_dim, action_dim, lr):
+		super(DQN, self).__init__()
+		SIZE = 64
 
-        self.nn = nn.Sequential(
-                torch.nn.Linear(state_dim, SIZE),
-                nn.LeakyReLU(),
-                nn.Linear(SIZE, SIZE * 2),
-                nn.LeakyReLU(),
-                nn.Linear(SIZE * 2, action_dim)
-        )
+		self.nn = nn.Sequential(
+				torch.nn.Linear(state_dim, SIZE),
+				nn.LeakyReLU(),
+				nn.Linear(SIZE, SIZE * 2),
+				nn.LeakyReLU(),
+				nn.Linear(SIZE * 2, action_dim)
+		)
 
-        self.loss = nn.MSELoss()
-        self.optimiser = torch.optim.Adam(self.nn.parameters(), lr)
-
-
-    def update(self, state, y):
-        y_pred = self.nn(torch.Tensor(state))
-        loss = self.loss(y_pred, Variable(torch.Tensor(y)))
-        # print(loss.item())
-        self.optimiser.zero_grad()
-        loss.backward()
-        self.optimiser.step()
-        return y_pred, loss.item()
-        
+		self.loss = nn.MSELoss()
+		self.optimiser = torch.optim.Adam(self.nn.parameters(), lr)
 
 
-    def predict(self, state):
-        with torch.no_grad():
-            return self.nn(torch.Tensor(state))
+	def update(self, state, y):
+		y_pred = self.nn(torch.Tensor(state))
+		loss = self.loss(y_pred, Variable(torch.Tensor(y)))
+		# print(loss.item())
+		self.optimiser.zero_grad()
+		loss.backward()
+		self.optimiser.step()
+		return y_pred, loss.item()
+		
+
+
+	def predict(self, state):
+		with torch.no_grad():
+			return self.nn(torch.Tensor(state))
 
 
 def train(env, model, episodes, gamma, epsilon, decay):
 
 
-    final_reward = []
-    goal_achieved = 0   
-    episode_num = 0
-    average_loss_per_ep = []
-    act_q_0 = []
-    act_q_1 = []
-    pred_q_0 = []
-    pred_q_1 = []
-    failures = []
-    cart_position = []
-    pole_angle = []
-    q_list = []
-    
-    
-    
+	final_reward = []
+	goal_achieved = 0	
+	episode_num = 0
+	
+	states_vs_qs = []	 
 
-    for _ in range(episodes):
-        loss_ep = []
-        episode_num +=1
-        state = env.reset()
-        done = False
-        total = 0
-        
-        
-        
-        while not done:
-            q_values = model.predict(state)
-            
-            if np.random.random() < epsilon:
-                action = env.action_space.sample()
-            else:
-                action = torch.argmax(q_values).item()
+	for _ in range(episodes):
+		episode_num +=1
+		state = env.reset()
+		done = False
+		total = 0
+		
+		
+		while not done:
+			q_values = model.predict(state)
+			
+			if np.random.random() < epsilon:
+				action = env.action_space.sample()
+			else:
+				action = torch.argmax(q_values).item()
 
-            next_state, reward, done, _ = env.step(action)
-            
-            # state[0] is cart position
-            # state[2] is pole angle 
-            cart_position.append(state[0])
-            pole_angle.append(state[2])
-            
-            #env.render()
-            total += reward
+			next_state, reward, done, _ = env.step(action)
+			
+			# state[0] is cart position
+			# state[2] is pole angle 
+			
+			#env.render()
+			total += reward
 
-            if done:
-                q_values[action] = reward
-                y_pred, loss = model.update(state, q_values)
-                loss_ep.append(loss)
-                act_q_0.append(q_values[0].item())
-                act_q_1.append(q_values[1].item())
-                q_list += [q_values]
-                #q_s = torch.stack((q_s, q_values), dim=0)
-                
-                pred_q_0.append(y_pred[0].item())
-                pred_q_1.append(y_pred[1].item())
-                
-                break 
+			if done:
+				q_values[action] = reward
+				y_pred, loss = model.update(state, q_values)
+				data = (np.round(state[0], 2), np.round(state[2], 2), q_values[0].item(), q_values[1].item())
+				states_vs_qs.append(data)
+				
+				break 
 
-            q_values_next = model.predict(next_state)
-            # print(q_values_next)
-            q_values[action] = reward + gamma * torch.max(q_values_next).item()
-            q_list += [q_values]
-            #q_s = torch.stack((q_s, q_values), dim=0)
-            # print(q_values)
-            act_q, loss = model.update(state, q_values)
-            
-            
-            # print("Next", q_values_next)
-            
-            
-            act_q_0.append(act_q[0].item())
-            act_q_1.append(act_q[1].item())
-            
-            pred_q_0.append(q_values[0].item())
-            pred_q_1.append(q_values[1].item())
-            
-            loss_ep.append(loss)
-            state = next_state
-    
-        epsilon = max(epsilon * decay, 0.01)
-        final_reward.append(total)
-        avg_loss = np.mean(loss_ep)
-        average_loss_per_ep.append(avg_loss)
-        if total >= 200:
-            goal_achieved += 1
-        # print("Episode number:", episode_num, "Reward:", total, "Epsilon:", epsilon)
-        # print("Q values", q_values)
-        # print("State", state)
-        
- 
-    
-    # return final_reward, goal_achieved
-    # return final_reward, goal_achieved, average_loss_per_ep
-    q_s = torch.stack(tuple([q for q in q_list]))
-    # max_qs = [max(q).item() for q in q_s]
-    
-    
-    return q_s, cart_position, pole_angle
-    # return final_reward, goal_achieved, average_loss_per_ep, act_q_0, pred_q_0, act_q_1, pred_q_1
+			q_values_next = model.predict(next_state)
+			q_values[action] = reward + gamma * torch.max(q_values_next).item()
+			act_q, loss = model.update(state, q_values)
 
+			data = (np.round(state[0], 2), np.round(state[2], 2), q_values[0].item(), q_values[1].item())
+			states_vs_qs.append(data)
+			
+			state = next_state
+	
+		epsilon = max(epsilon * decay, 0.01)
+		final_reward.append(total)
+		if total >= 200:
+			goal_achieved += 1
+	
+	
+	return states_vs_qs
 
 
 
@@ -154,7 +109,7 @@ episodes = 10
 lr = 0.001
 
 gamma = 0.9
-epsilon = 0.3
+epsilon = 0.4
 decay = 0.99
 UPDATE = 10
 
@@ -162,53 +117,25 @@ UPDATE = 10
 env = gym.make("CartPole-v1")
 obs_dim = env.observation_space.shape[0]
 action_dim = env.action_space.n
-model = DQN(obs_dim, action_dim, lr)
 
 
-q, pos, angle = train(env, model, 500, gamma, epsilon, decay)
+first = open("f_ang_ang_speed.csv", "w+")
+last = open("l_ang_ang_speed.csv", "w+")
 
+first.write(",".join(["ang speed", "angle", "q_0", "q_1"]) + "\n")
+last.write(",".join(["ang speed", "angle", "q_0", "q_1"]) + "\n")
+T = 10
 
-#8.5
-#8.3
-q_max = torch.max(q, axis=1)
-print(len(q_max[0]))
-print(q_max[0].shape)
-print(q_max[0].shape)
+for t in range(T):
+	print(t)
+	model = DQN(obs_dim, action_dim, lr)
+	s_v_q = train(env, model, 150, gamma, epsilon, decay)
 
-numpy_q = q_max[0].T.numpy()
-print(numpy_q)
+	for el in s_v_q[:500]:
+		first.write(",".join([str(e) for e in el]) + "\n")
+	for el in s_v_q[-500:]:
+		last.write(",".join([str(e) for e in el]) + "\n")
 
-from matplotlib import cm, projections
-from scipy.interpolate import griddata
-
-
-fig = plt.figure(figsize=(12, 12))
-ax = fig.add_subplot(projection="3d")
-
-# SLICE = 4000
-
-
-
-# x_min, x_max = env.observation_space.low[0], env.observation_space.high[0]
-# y_min, y_max = env.observation_space.low[2], env.observation_space.high[2]
-
-# x_space = np.linspace(x_min, x_max, len(pos[-SLICE:]))
-# y_space = np.linspace(y_min, y_max, len(angle[-SLICE:]))
-# X, Y = np.meshgrid(x_space, y_space)
-
-# Z = griddata((pos[-SLICE:], angle[-SLICE:]), q_max[0].T[-SLICE:] , (X[-SLICE:], Y[-SLICE:]), method='linear')
-# # plt.pcolormesh(X, Y, Z)
-
-
-# surf = ax.plot_surface(X, Y, Z, cmap=cm.coolwarm)
-# fig.colorbar(surf, shrink=0.5)
-
-plot = ax.scatter3D(pos[:500], angle[:500], q.T[1][:500], c=numpy_q[:500], cmap=cm.coolwarm)
-ax.view_init(20, -120)
-fig.colorbar(plot)
-plt.show()
-
-
-# plot the scatter of Q vs (pos, angle) for the first and last 500 steps of the training process
-
+first.close()
+last.close()
 
