@@ -7,7 +7,7 @@ from torch.autograd import Variable
 import pandas as pd
 
 from Visualisation import render_averages_plot, render_plot_with_hist
-
+	
 # define the model 
 
 class DQN():
@@ -105,7 +105,7 @@ def train(env, model, episodes, gamma, epsilon, decay):
 
 
 # parameters
-episodes = 10
+episodes = 150
 lr = 0.001
 
 gamma = 0.9

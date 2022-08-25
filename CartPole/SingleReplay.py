@@ -93,15 +93,6 @@ def train(env, model, episodes, gamma, epsilon, decay):
 
 
 
-# parameters
-episodes = 150
-lr = 0.001
-
-gamma = 0.9
-epsilon = 0.3
-decay = 0.99
-UPDATE = 10
-
 def average(runs, env, episodes):
     all_rewards = []
     successes = []
@@ -118,6 +109,16 @@ def average(runs, env, episodes):
     return successes, rewards_array
 
 
+
+# parameters
+episodes = 150
+lr = 0.001
+
+gamma = 0.9
+epsilon = 0.3
+decay = 0.99
+UPDATE = 10
+
 if __name__ == "__main__":
 
     env = gym.make("CartPole-v1")
@@ -125,20 +126,5 @@ if __name__ == "__main__":
     action_dim = env.action_space.n
     model = DQN(obs_dim, action_dim, lr)
     rewards, goals = train(env, model, episodes, gamma, epsilon, decay)
-
-    goals, rewards = average(10, env, episodes)
-    
-    for i in range(len(rewards)):
-        plt.plot(range(episodes), rewards[i], label='_nolegend_')
-    plt.axhline(y=200, color='r', linestyle='--', label='goal')
-    plt.legend()
-    plt.title("CartPole rewards using random strategy over 10 runs")
-    plt.xlabel("Episodes")
-    plt.ylabel("Reward")
-    plt.show()
-
-
-
-
 
 
