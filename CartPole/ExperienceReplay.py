@@ -110,11 +110,11 @@ def train(env, model, episodes, gamma, epsilon, decay, mem_size):
         # avg_loss = np.mean(ep_loss)
         # average_loss_ep.append(avg_loss)
     
-    return goal_achieved
+    return final_reward
 
 
 episodes = 150
-lr = 0.001
+lr = 0.0005
 gamma = 0.9
 epsilon = 0.4
 decay = 0.99
@@ -127,30 +127,14 @@ if __name__ == "__main__":
     obs_dim = env.observation_space.shape[0]
     action_dim = env.action_space.n
 
-    f = open("lr_v_perf.csv", "w+")
+    model = ER(obs_dim, action_dim, lr)
+    best_reward = train(env, model, episodes, gamma, epsilon, decay, 10)
+    
 
-
-    goal_v_mem = []
-    for lr in [0.1, 0.05, 0.01, 0.005, 0.001, 0.0005, 0.0001]:
-        print(lr)
-        f.write(str(lr) + ",")
-        model = ER(obs_dim, action_dim, lr)
-        g_v_lr = train(env, model, episodes, gamma, epsilon, decay, 10)
-        f.write(str(g_v_lr) + "\n")
-        goal_v_mem.append(g_v_lr)
+    f = open("best_perf.csv", "w+")
+    f.write(",".join(["rewards"]) + "\n")
+    f.write("\n".join([str(el) for el in best_reward]))
 
     f.close()
 
-
-
-
-    # ale = t
-
-    # f = open("loss_graph.csv", "w+")
-
-    # for x in ale:
-    #     f.write(str(x) + "\n")
-
-    # f.close()
-    
 

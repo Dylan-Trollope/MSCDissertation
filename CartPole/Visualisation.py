@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def render_plot_with_hist(x, y, count, title, trend, filename):
+def render_plot_with_hist(x, y, count, title, trend):
 
     f, ax = plt.subplots(nrows=1, ncols=2)
     f.suptitle(title)
@@ -28,12 +28,11 @@ def render_plot_with_hist(x, y, count, title, trend, filename):
     ax[1].set_xlabel("Scores per last 50 episodes")
     ax[1].set_ylabel("Frequency")
     ax[1].legend()
-    plt.savefig(fname=filename, dpi=100)
     f.tight_layout()
     plt.show()
 
 
-def render_averages_plot(x, ys, title, filename):
+def render_averages_plot(x, ys, title):
     plt.title(title)
     plt.axhline(y=200, color='r', linestyle='--', label='goal')
     plt.title(title)
@@ -42,6 +41,5 @@ def render_averages_plot(x, ys, title, filename):
     for i in range(len(ys)):
         plt.plot(x, ys[i], label='_nolegend_')
     plt.legend()
-    plt.savefig(fname=filename, dpi=300)
     plt.show()
 
