@@ -34,7 +34,7 @@ for i, pos in enumerate(pos_range):
 fig, axs = plt.subplots(2, 1)
 axs[0].set_xticks(range(len(pos_range))[0::3], pos_range[0::3], rotation=90)
 axs[0].set_yticks(range(len(ang_range))[0::3], ang_range[0::3])
-im = axs[0].imshow(grid, cmap=plt.get_cmap("inferno"))
+im = axs[0].imshow(grid, interpolation="nearest", cmap=plt.get_cmap("inferno"))
 
 df = pd.read_csv(sys.argv[2])
 
@@ -55,7 +55,7 @@ for i, pos in enumerate(pos_range):
 axs[1].set_xticks(range(len(pos_range))[0::3], pos_range[0::3], rotation=90)
 axs[1].set_yticks(range(len(ang_range))[0::3], ang_range[0::3])
 
-im = axs[1].imshow(grid, cmap=plt.get_cmap("inferno"))
+im = axs[1].imshow(grid, interpolation="nearest", cmap=plt.get_cmap("inferno"))
 axs[0].title.set_text("First 500")
 axs[1].title.set_text("Last 500")
 plt.xlabel("Position of Cart")
